@@ -1,0 +1,60 @@
+{% extends "acronyme/base.html" %}
+
+{% block title %}Acronyme — sélection d'un mot{% endblock %}
+
+{% block content %}
+    <h1>Acronyme</h1>
+    <p class="muted">Choisissez un mot dans la liste pour le sélectionner.</p>
+
+    <div class="card">
+        <form method="get">
+            <label for="word-select"><strong>Mot :</strong></label>
+            <select id="word-select" name="word" onchange="this.form.submit()">
+                <option value="" {% if not selected_word %}selected{% endif %} disabled>— sélectionner —</option>
+                {% for word in words %}
+                    <option value="{{ word }}" {% if word == selected_word %}selected{% endif %}>{{ word }}</option>
+                {% endfor %}
+            </select>
+            <noscript>
+                <button type="submit">Valider</button>
+            </noscript>
+        </form>
+    </div>
+
+    {% if selected_word %}
+        <div class="card">
+            <p class="muted">Mot sélectionné :</p>
+            <div class="result">{{ selected_word }}</div>
+        </div>
+
+        <div class="card">
+            <p class="muted">Choisissez un mot pour chaque lettre :</p>
+            <form method="get">
+                <input type="hidden" name="word" value="{{ selected_word }}">
+                <div class="letter-row">
+                    {% for choice in letter_choices %}
+                        <div class="letter-cell">
+                            <div class="letter-badge">{{ choice.letter }}</div>
+                            <select name="letter_{{ choice.index }}">
+                                <option value="" {% if not choice.chosen %}selected{% endif %} disabled>—</option>
+                                {% for word in choice.words %}
+                                    <option value="{{ word }}" {% if word == choice.chosen %}selected{% endif %}>{{ word }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div style="margin-top: 20px;">
+                    <button type="submit">Valider</button>
+                </div>
+            </form>
+        </div>
+
+        {% if sentence %}
+            <div class="card">
+                <p class="muted">Résultat :</p>
+                <p class="sentence">{{ sentence }}</p>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endblock %}

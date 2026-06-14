@@ -1,0 +1,15 @@
+# Django core
+Django==5.2.7
+djangorestframework==3.16.1
+django-cors-headers==4.9.0
+
+# Documentation OpenAPI / Swagger / Redoc
+drf-spectacular[sidecar]==0.28.0
+# Pin pour stabiliser le résolveur pip face aux contraintes lâches de drf-spectacular
+jsonschema==4.25.1
+
+# Lecture des variables d'environnement (.env)
+environs==14.3.0
+
+# Service de fichiers statiques
+whitenoise==6.11.0

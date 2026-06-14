@@ -1,0 +1,11 @@
+# Test framework
+pytest==9.0.3
+
+# Intégration Django (DJANGO_SETTINGS_MODULE, fixtures client/db)
+pytest-django==4.11.1
+
+# Injection de variables d'environnement pendant les tests
+pytest-env==1.2.0
+
+# Mesure de la couverture de tests (--cov)
+pytest-cov==5.0.0
