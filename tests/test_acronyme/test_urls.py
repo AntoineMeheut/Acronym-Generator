@@ -1,3 +1,10 @@
+"""Tests des routes URL de l'application ``acronyme``.
+
+Vérifient à la fois :func:`django.urls.resolve` (URL → nom de vue) et
+:func:`django.urls.reverse` (nom de vue → URL) pour les deux routes
+``home`` et ``acronyme``.
+"""
+
 from django.urls import resolve, reverse
 
 

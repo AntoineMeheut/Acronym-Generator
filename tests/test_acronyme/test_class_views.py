@@ -1,3 +1,12 @@
+"""Tests des vues ``home`` et ``acronyme_page`` en style
+:class:`django.test.SimpleTestCase`.
+
+Doublon volontaire de :mod:`tests.test_acronyme.test_views` (qui utilise
+le style fonctionnel ``pytest``) : ce module garantit que les vues
+restent compatibles avec le runner ``manage.py test`` standard de
+Django, en plus de ``pytest``.
+"""
+
 from django.test import SimpleTestCase
 from django.urls import reverse
 

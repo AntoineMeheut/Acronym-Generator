@@ -1,3 +1,18 @@
+"""Tests des vues :func:`acronyme.views.home` et
+:func:`acronyme.views.acronyme_page`, en style ``pytest``.
+
+Couvre :
+
+- rendu de la page d'accueil ;
+- affichage de la combo sans mot sélectionné ;
+- gestion d'un mot connu / inconnu / vide / saisi en minuscules ;
+- comptage des dropdowns par lettre ;
+- choix invalides ignorés ;
+- génération de la phrase finale uniquement quand tous les choix sont
+  valides ;
+- préservation du choix utilisateur dans le ``<select>``.
+"""
+
 from django.urls import reverse
 
 from resources.initlist import GROS_MOTS

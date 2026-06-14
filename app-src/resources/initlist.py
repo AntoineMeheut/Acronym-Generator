@@ -1,6 +1,15 @@
-"""Données du générateur d'acronymes.
+"""Mots de base du générateur d'acronymes.
 
-- ``GROS_MOTS`` : liste des gros mots français servant d'acronymes.
+Expose :data:`GROS_MOTS`, un tuple de gros mots, jurons, insultes et
+expressions argotiques françaises servant de mots de base pour la
+génération d'acronymes corporate.
+
+Les mots sont écrits **en majuscules sans accents** : la vue
+:func:`acronyme.views.acronyme_page` normalise la saisie utilisateur en
+majuscules avant de la valider contre ce tuple. L'ordre d'écriture suit
+des regroupements thématiques (jurons, insultes générales, insultes plus
+crues…), mais l'affichage dans la combo est trié par ordre alphabétique
+français au moment du rendu.
 """
 
 GROS_MOTS = (

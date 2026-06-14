@@ -1,10 +1,10 @@
-"""
-ASGI config for acronyme project.
+"""Configuration ASGI du projet ``acronyme``.
 
-It exposes the ASGI callable as a module-level variable named ``application``.
+Expose la callable ASGI sous la variable de module ``application``,
+attendue par les serveurs ASGI (Daphne, Uvicorn, Hypercorn…).
 
-For more information on this file, see
-https://docs.djangoproject.com/en/3.2/howto/deployment/asgi/
+Pour plus d'informations, voir la documentation Django :
+https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
 """
 
 import os

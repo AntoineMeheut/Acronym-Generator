@@ -1,3 +1,5 @@
+"""Tests de la classe :class:`acronyme.apps.AcronymeAppConfig`."""
+
 from django.apps import apps
 
 from acronyme.apps import AcronymeAppConfig

@@ -1,3 +1,18 @@
+"""Tests de :mod:`logger.formatter`.
+
+Trois sections :
+
+- ``JsonFormatter`` — schéma standard, surcharge via
+  ``set_custom_attributes``, helpers de classe (``to_json``,
+  ``extra_from_record``, ``custom_record``, ``order_record``,
+  ``mutate_json_record``, ``json_record``).
+- ``LegacyFormatter`` — schéma legacy Java, support des exceptions et
+  des extras non standard.
+- Helpers module-level — ``_json_serializable``, ``to_json``,
+  ``custom_fields``, ``order_record``, ``custom_extra_fields``,
+  ``mutate_json_record``.
+"""
+
 import json
 import logging
 import sys

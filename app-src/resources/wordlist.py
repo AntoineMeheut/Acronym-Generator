@@ -1,11 +1,19 @@
 # -*- coding: utf-8 -*-
 
-"""Données du générateur d'acronymes.
+"""Mots disponibles pour chaque lettre du générateur d'acronymes.
 
-- ``MOTS_PAR_LETTRE`` : pour chaque lettre, une liste de mots français au ton
-  « comité de direction » (jargon corporate / management) commençant par cette
-  lettre. Le générateur en pioche un par lettre du gros mot pour construire
-  un acronyme à consonance sérieuse.
+Expose :data:`MOTS_PAR_LETTRE`, un dictionnaire ``{lettre: [mots]}``
+recensant des mots français au ton « comité de direction » (jargon
+corporate / management) commençant par chaque lettre de l'alphabet.
+
+La vue :func:`acronyme.views.acronyme_page` pioche, pour chaque lettre du
+mot de base sélectionné, la liste correspondante. L'utilisateur en
+choisit un mot par lettre, et la concaténation des choix produit la
+phrase finale au ton sérieux qui sert d'acronyme.
+
+L'ordre d'écriture suit des regroupements sémantiques (anglicismes,
+thèmes stratégiques, etc.) ; le tri alphabétique est appliqué uniquement
+à l'affichage dans les combos.
 """
 
 MOTS_PAR_LETTRE = {

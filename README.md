@@ -11,7 +11,7 @@
 Acronyme Generator
 ------------------
 
-Générateur d'acronymes corporate : choisissez un mot de base, puis pour chaque lettre choisissez un mot au ton « comité de direction » pour assembler la phrase finale.
+Générateur d'acronymes corporate : choisissez un mot de base (un gros mot, un juron, une insulte argotique…), puis pour chaque lettre choisissez un mot au ton « comité de direction » pour assembler une phrase finale à consonance sérieuse.
 
 ## Table des matières
 1. [Présentation](#presentation)
@@ -20,7 +20,7 @@ Générateur d'acronymes corporate : choisissez un mot de base, puis pour chaque
 4. [Installation](#install)
 5. [Démarrage](#usage)
 6. [Tests et couverture](#tests)
-7. [Liens utiles](#links)
+7. [Documentation du code](#docs)
 8. [Contacts](#contacts)
 9. [Licence](#licence)
 
@@ -28,26 +28,36 @@ Générateur d'acronymes corporate : choisissez un mot de base, puis pour chaque
 
 Application Django 5.2 qui propose :
 
-- une page d'accueil avec un menu de navigation,
-- une page **Acronyme** (`/acronyme/`) avec une combo listant les mots de base (`resources/initlist.py`),
-- une fois un mot choisi, autant de dropdowns que de lettres, chacun rempli depuis `resources/wordlist.py`,
+- une page d'accueil avec un menu de navigation ;
+- une page **Acronyme** (`/acronyme/`) avec une combo listant les mots de base (`resources/initlist.py`) ;
+- une fois un mot choisi, autant de dropdowns que de lettres, chacun rempli depuis `resources/wordlist.py` ;
 - un bouton **Valider** qui affiche la phrase finale.
 
-Documentation OpenAPI/Swagger disponible sur `/swagger/`.
+Les listes affichées dans les combos sont **triées par ordre alphabétique français** (insensible aux accents et à la casse) au moment du rendu — les fichiers de données conservent leurs regroupements thématiques.
+
+Documentation OpenAPI/Swagger disponible sur `/swagger/` (UI Swagger), `/swagger/redoc/` (Redoc) et `/swagger/schema/` (schéma brut), exposés via `drf-spectacular`.
 
 ## Structure du projet <a name="structure"></a>
 
-Code source sous `app-src/` (qui sert de racine d'import — `pythonpath = ["", "app-src"]`).
+Code source sous `app-src/` (racine d'import — `pythonpath = ["", "app-src"]` dans `pytest.ini`).
 
-| Package                | Rôle                                                              |
-|------------------------|-------------------------------------------------------------------|
-| `app-src/config/`      | projet Django (settings, urls, wsgi, asgi)                        |
-| `app-src/acronyme/`    | app Django (vues, urls, templates) — pages d'accueil et acronyme  |
-| `app-src/resources/`   | données pures : `initlist.GROS_MOTS` et `wordlist.MOTS_PAR_LETTRE`|
-| `app-src/logger/`      | formatter JSON in-tree (`JsonFormatter`, `LegacyFormatter`)       |
-| `tests/`               | suite pytest : `test_acronyme/` et `test_logger/`                 |
+| Package                | Rôle                                                                  |
+|------------------------|-----------------------------------------------------------------------|
+| `app-src/config/`      | projet Django (settings, urls, wsgi, asgi)                            |
+| `app-src/acronyme/`    | app Django (vues, urls, templates) — pages d'accueil et acronyme      |
+| `app-src/resources/`   | données pures : `initlist.GROS_MOTS` et `wordlist.MOTS_PAR_LETTRE`    |
+| `app-src/logger/`      | formatters JSON in-tree (`JsonFormatter`, `LegacyFormatter`)          |
+| `tests/`               | suite pytest : `test_acronyme/` et `test_logger/`                     |
 
-Le module `logger` est référencé dans `LOGGING` (`config/settings.py`) via la classe `logger.formatter.JsonFormatter`.
+Le module `logger` est référencé dans `LOGGING` (`config/settings.py`) via la classe `logger.formatter.JsonFormatter` — les logs console sortent ainsi directement au format JSON.
+
+### Vue d'ensemble du flux
+
+1. L'utilisateur arrive sur `/acronyme/` et choisit un mot dans la combo (sélection envoyée en paramètre GET `word`).
+2. La vue [`acronyme_page`](app-src/acronyme/views.py) normalise la saisie en majuscules et la valide contre `GROS_MOTS`.
+3. Pour chaque lettre, un dropdown trié alphabétiquement est construit depuis `MOTS_PAR_LETTRE`.
+4. Les choix utilisateur sont relus dans `letter_0`, `letter_1`, … et invalidés s'ils sortent de la liste autorisée.
+5. La phrase finale est concaténée et affichée si — et seulement si — **tous** les choix sont valides.
 
 ## Prérequis <a name="prerequis"></a>
 
@@ -57,7 +67,7 @@ Le module `logger` est référencé dans `LOGGING` (`config/settings.py`) via la
 
 ## Installation <a name="install"></a>
 
-1. Cloner le repo
+1. Cloner le repo.
 
 2. Créer le virtualenv et installer les dépendances (runtime + dev) :
    ```shell
@@ -127,13 +137,24 @@ open htmlcov/index.html
 pytest --cov --cov-fail-under=80
 ```
 
-État actuel : **92% de couverture** sur 50 tests.
+État actuel : **50 tests** verts. Périmètre couvert (`.coveragerc`) : `app-src/` à l'exception de `manage.py`, `config/{wsgi,asgi,settings}.py`, `migrations/` et `resources/` (données pures).
 
-Périmètre couvert (`.coveragerc`) : `app-src/` à l'exception de `manage.py`, `config/{wsgi,asgi,settings}.py`, `migrations/` et `resources/` (données pures).
+## Documentation du code <a name="docs"></a>
+
+Tous les modules Python du projet sont documentés via des docstrings (format Google / reST). Quelques points d'entrée utiles :
+
+- [`acronyme/views.py`](app-src/acronyme/views.py) — les deux vues `home` et `acronyme_page`, et la clé de tri alphabétique français `_sort_key`.
+- [`acronyme/urls.py`](app-src/acronyme/urls.py) — routes de l'app.
+- [`config/settings.py`](app-src/config/settings.py) — paramètres Django, `LOGGING`, `SPECTACULAR_SETTINGS`.
+- [`config/urls.py`](app-src/config/urls.py) — routes racine + Swagger.
+- [`logger/formatter.py`](app-src/logger/formatter.py) — `JsonFormatter` et `LegacyFormatter`, avec helpers module-level.
+- [`resources/initlist.py`](app-src/resources/initlist.py) et [`resources/wordlist.py`](app-src/resources/wordlist.py) — données du générateur.
+
+Pour générer une documentation HTML à partir des docstrings, on peut utiliser un outil tiers (Sphinx, pdoc, mkdocs-material…) en pointant vers `app-src/` ; aucune configuration n'est fournie par défaut.
 
 ## Contacts <a name="contacts"></a>
 
-- [Antoine Meheut](mailto:<github.contacts@protonmail.com)
+- [Antoine Meheut](mailto:github.contacts@protonmail.com)
 
 ## Licence <a name="licence"></a>
 
