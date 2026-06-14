@@ -261,7 +261,7 @@ MOTS_PAR_LETTRE = {
         "Gabarit",
         "Genèse"
     ],
-"H": [
+    "H": [
         "Holistique",
         "Harmonisation",
         "Horizon",

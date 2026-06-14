@@ -24,3 +24,12 @@ def test_home_url_reverses():
 
 def test_acronyme_url_reverses():
     assert reverse('acronyme') == '/acronyme/'
+
+
+def test_genauto_url_resolves_to_genauto_view():
+    match = resolve('/genauto/')
+    assert match.view_name == 'genauto'
+
+
+def test_genauto_url_reverses():
+    assert reverse('genauto') == '/genauto/'

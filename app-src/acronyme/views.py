@@ -1,11 +1,13 @@
 """Vues de l'application ``acronyme``.
 
-Ce module fournit deux vues :
+Ce module fournit trois vues :
 
 - :func:`home` — rend la page d'accueil avec le menu de navigation.
-- :func:`acronyme_page` — rend la page de génération d'acronymes : sélection
+- :func:`acronyme_page` — rend la page de génération manuelle : sélection
   d'un mot de base puis, pour chaque lettre, choix d'un mot au ton corporate
   pour assembler la phrase finale.
+- :func:`genauto_page` — rend la page de génération automatique : sélection
+  d'un mot de base puis tirage aléatoire de 10 phrases (un mot par lettre).
 
 Les listes affichées dans les combos sont triées par ordre alphabétique
 français (insensible aux accents et à la casse) via :func:`_sort_key`. Les
@@ -13,12 +15,16 @@ fichiers de données :mod:`resources.initlist` et :mod:`resources.wordlist`
 ne sont pas modifiés : le tri est appliqué au moment du rendu.
 """
 
+import random
 import unicodedata
 
 from django.shortcuts import render
 
 from resources.initlist import GROS_MOTS
 from resources.wordlist import MOTS_PAR_LETTRE
+
+GENAUTO_RUNS = 10
+MISSING_LETTER_PLACEHOLDER = '···'
 
 
 def _sort_key(word):
@@ -108,4 +114,48 @@ def acronyme_page(request):
         'selected_word': selected,
         'letter_choices': letter_choices,
         'sentence': sentence,
+    })
+
+
+def genauto_page(request):
+    """Rend la page de génération automatique d'acronymes.
+
+    Le paramètre GET ``word`` désigne le mot de base. Il est normalisé en
+    majuscules et validé contre :data:`resources.initlist.GROS_MOTS`. Si
+    le mot est inconnu, il est ignoré (``selected`` vaut ``None``) et
+    aucune phrase n'est produite.
+
+    Quand le mot est valide, :data:`GENAUTO_RUNS` phrases sont générées
+    via :func:`random.choice` sur :data:`resources.wordlist.MOTS_PAR_LETTRE`
+    pour chaque lettre. Si la liste d'une lettre est vide,
+    :data:`MISSING_LETTER_PLACEHOLDER` est inséré à la place du mot pour
+    éviter une :class:`IndexError`.
+
+    Args:
+        request: Requête HTTP entrante. Paramètre GET accepté : ``word``.
+
+    Returns:
+        Réponse HTTP rendant ``acronyme/genauto.html`` avec le contexte :
+
+        - ``words`` : liste triée des mots de base ;
+        - ``selected_word`` : mot retenu, ou ``None`` ;
+        - ``sentences`` : liste des phrases générées (vide si pas de mot).
+    """
+    selected = (request.GET.get('word') or '').upper()
+    if selected not in GROS_MOTS:
+        selected = None
+
+    sentences = []
+    if selected:
+        for _ in range(GENAUTO_RUNS):
+            words = []
+            for letter in selected:
+                available = MOTS_PAR_LETTRE.get(letter, [])
+                words.append(random.choice(available) if available else MISSING_LETTER_PLACEHOLDER)
+            sentences.append(' '.join(words))
+
+    return render(request, 'acronyme/genauto.html', {
+        'words': sorted(GROS_MOTS, key=_sort_key),
+        'selected_word': selected,
+        'sentences': sentences,
     })
